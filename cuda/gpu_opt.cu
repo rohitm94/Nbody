@@ -65,6 +65,7 @@ int main(const int argc, const char** argv) {
     mass[l] = SOLAR_MASS * (rand() / (float)RAND_MAX);
   }
 
+  float *d_mass;
   cudaMalloc((void **)&d_mass, mass_size));
 
   float *d_buf;
