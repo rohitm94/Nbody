@@ -89,10 +89,10 @@ int main(const int argc, const char** argv) {
     std::cout<<"test 6"<<std::endl;
     for (int i = 0 ; i < nBodies; i++) { // integrate position
       std::cout<<"test 7-1"<<std::endl;
-      p.pos[i].x += 0.5*(p.newvel[i].x + p.oldvel[i].x)*dt;
+      p.pos[i].x += (p.newvel[i].x)*dt;
       std::cout<<"test 7-2"<<std::endl;
-      p.pos[i].y += 0.5*(p.newvel[i].y + p.oldvel[i].y)*dt;
-      p.pos[i].z += 0.5*(p.newvel[i].z + p.oldvel[i].z)*dt;
+      p.pos[i].y += (p.newvel[i].y)*dt;
+      p.pos[i].z += (p.newvel[i].z)*dt;
       std::cout<<"test 7-last"<<std::endl;
     }
 
