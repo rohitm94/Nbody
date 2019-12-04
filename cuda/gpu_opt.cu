@@ -88,12 +88,9 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
     std::cout<<"test 6"<<std::endl;
     for (int i = 0 ; i < nBodies; i++) { // integrate position
-      std::cout<<"test 7-1"<<std::endl;
       p.pos[i].x += (p.newvel[i].x)*dt;
-      std::cout<<"test 7-2"<<std::endl;
       p.pos[i].y += (p.newvel[i].y)*dt;
       p.pos[i].z += (p.newvel[i].z)*dt;
-      std::cout<<"test 7-last"<<std::endl;
     }
 
     const double tElapsed = GetTimer() / 1000.0;
