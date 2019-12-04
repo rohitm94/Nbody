@@ -66,7 +66,7 @@ int main(const int argc, const char** argv) {
   }
 
   float *d_mass;
-  cudaMalloc((void **)&d_mass, mass_size));
+  cudaMalloc((void **)&d_mass , mass_size));
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
