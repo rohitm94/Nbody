@@ -8,17 +8,16 @@
 #define G 6.674083131313131313e-11
 #define SOLAR_MASS 1.989e30
 
-typedef struct { float *pos, *newvel, *oldvel, *mass; } BodySystem;
+typedef struct { float4 *pos, *newvel, *oldvel, *mass; } BodySystem;
 
 void randomizeBodies(float *data, int n) {
-  int c = 0; 
   for (int i = 0; i < n; i++) {
     data[i] = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
   }
 }
 
 __global__
-void bodyForce(float *p, float *v,float *u, float *m, float dt, int n) {
+void bodyForce(float4 *p, float4 *v,float4 *u, float4 *m, float dt, int n) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if (i < n) {
     float Ax = 0.0f; float Ay = 0.0f; float Az = 0.0f;
@@ -53,15 +52,15 @@ int main(const int argc, const char** argv) {
   const float dt = 0.01f; // time step
   const int nIters = 10;  // simulation iterations
   
-  int bytes = 4*nBodies*sizeof(float);
+  int bytes = 4*nBodies*sizeof(float4);
   float *buf = (float*)malloc(bytes);
-  BodySystem p = { (float*)buf, ((float*)buf) + nBodies };
+  BodySystem p = { (float4*)buf, ((float4*)buf) + nBodies };
 
   randomizeBodies(buf, 16*nBodies); // Init pos / vel data
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
-  BodySystem d_p = { (float*)d_buf, ((float*)d_buf) + nBodies };
+  BodySystem d_p = { (float4*)d_buf, ((float4*)d_buf) + nBodies };
 
   int nBlocks = (nBodies + BLOCK_SIZE - 1) / BLOCK_SIZE;
   double totalTime = 0.0; 
