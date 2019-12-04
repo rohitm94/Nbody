@@ -8,7 +8,7 @@
 #define G 6.674083131313131313e-11
 #define SOLAR_MASS 1.989e30
 
-typedef struct { float4 *pos, *newvel, *oldvel, *mass; } BodySystem;
+typedef struct { float4 *pos, *newvel, *oldvel; } BodySystem;
 
 void randomizeBodies(float *data, int n) {
   for (int i = 0; i < n; i++) {
@@ -17,7 +17,7 @@ void randomizeBodies(float *data, int n) {
 }
 
 __global__
-void bodyForce(float4 *p, float4 *v,float4 *u, float4 *m, float dt, int n) {
+void bodyForce(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;
   if (i < n) {
     float Ax = 0.0f; float Ay = 0.0f; float Az = 0.0f;
@@ -27,7 +27,7 @@ void bodyForce(float4 *p, float4 *v,float4 *u, float4 *m, float dt, int n) {
       float dy = p[j].y - p[i].y;
       float dz = p[j].z - p[i].z;
 
-      float mg = G * m[j].x;
+      float mg = G * m[j];
 
       float distSqr = dx*dx + dy*dy + dz*dz + SOFTENING;
       float invDist = rsqrtf(distSqr);
@@ -52,11 +52,20 @@ int main(const int argc, const char** argv) {
   const float dt = 0.01f; // time step
   const int nIters = 10;  // simulation iterations
   
-  int bytes = 4*nBodies*sizeof(float4);
+  int bytes = 3*nBodies*sizeof(float4);
+  int mass_size = nBodies * sizeof(float);
   float *buf = (float*)malloc(bytes);
+  float *mass = new float[nBodies];
   BodySystem p = { (float4*)buf, ((float4*)buf) + nBodies };
 
-  randomizeBodies(buf, 16*nBodies); // Init pos / vel data
+  randomizeBodies(buf, 12*nBodies); // Init pos / vel data
+
+  cudaMallocHost((void **)&mass,mass_size);
+  for(int l = 0;l<nBodies;l++){
+    mass[l] = SOLAR_MASS * (rand() / (float)RAND_MAX);
+  }
+
+  cudaMalloc((void **)&d_mass, mass_size));
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
@@ -68,8 +77,9 @@ int main(const int argc, const char** argv) {
   for (int iter = 1; iter <= nIters; iter++) {
     StartTimer();
 
+    cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
-    bodyForce<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_p.mass , dt, nBodies);
+    bodyForce<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, nBodies);
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
     for (int i = 0 ; i < nBodies; i++) { // integrate position
@@ -90,6 +100,9 @@ int main(const int argc, const char** argv) {
 
   printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 
+
   free(buf);
   cudaFree(d_buf);
+  cudaFree(d_mass);
+  cudaFreeHost(mass);
 }
