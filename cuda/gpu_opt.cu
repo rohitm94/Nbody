@@ -51,7 +51,7 @@ int main(const int argc, const char** argv) {
   if (argc > 1) nBodies = atoi(argv[1]);
 
   const float dt = 0.01f; // time step
-  const int nIters = 10;  // simulation iterations
+  const int nIters = 2;  // simulation iterations
 
   int bytes = 3*nBodies*sizeof(float4);
   int mass_size = nBodies * sizeof(float);
@@ -88,10 +88,12 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
     std::cout<<"test 6"<<std::endl;
     for (int i = 0 ; i < nBodies; i++) { // integrate position
+      std::cout<<"test 7-1"<<std::endl;
       p.pos[i].x += 0.5*(p.newvel[i].x + p.oldvel[i].x)*dt;
+      std::cout<<"test 7-2"<<std::endl;
       p.pos[i].y += 0.5*(p.newvel[i].y + p.oldvel[i].y)*dt;
       p.pos[i].z += 0.5*(p.newvel[i].z + p.oldvel[i].z)*dt;
-      std::cout<<i<<std::endl;
+      std::cout<<"test 7-last"<<std::endl;
     }
 
     const double tElapsed = GetTimer() / 1000.0;
