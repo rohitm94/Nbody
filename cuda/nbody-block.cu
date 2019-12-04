@@ -13,7 +13,7 @@ void randomizeBodies(float *data, int n) {
     data[i] = 2.0f * (rand() / (float)RAND_MAX) - 1.0f;
   }
 }
-
+ 
 __global__
 void bodyForce(float4 *p, float4 *v, float dt, int n) {
   int i = blockDim.x * blockIdx.x + threadIdx.x;

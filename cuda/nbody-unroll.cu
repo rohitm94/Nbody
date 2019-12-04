@@ -25,7 +25,7 @@ void bodyForce(float4 *p, float4 *v, float dt, int n) {
       float4 tpos = p[tile * blockDim.x + threadIdx.x];
       spos[threadIdx.x] = make_float3(tpos.x, tpos.y, tpos.z);
       __syncthreads();
-
+ 
       #pragma unroll
       for (int j = 0; j < BLOCK_SIZE; j++) {
         float dx = spos[j].x - p[i].x;

@@ -4,13 +4,13 @@
 #include <stdlib.h>
 
 #ifdef WIN32
-  #define WIN32_LEAN_AND_MEAN
-  #include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #else
-  #ifndef __USE_BSD
-    #define __USE_BSD
-  #endif
-  #include <sys/time.h>
+#ifndef __USE_BSD
+#define __USE_BSD
+#endif
+#include <sys/time.h>
 #endif
 
 #ifdef WIN32
@@ -24,10 +24,10 @@ void StartTimer()
 {
 #ifdef WIN32
   LARGE_INTEGER li;
-  if(!QueryPerformanceFrequency(&li))
+  if (!QueryPerformanceFrequency(&li))
     printf("QueryPerformanceFrequency failed!\n");
 
-  PCFreq = (double)li.QuadPart/1000.0;
+  PCFreq = (double)li.QuadPart / 1000.0;
 
   QueryPerformanceCounter(&li);
   timerStart = li.QuadPart;
@@ -42,12 +42,12 @@ double GetTimer()
 #ifdef WIN32
   LARGE_INTEGER li;
   QueryPerformanceCounter(&li);
-  return (double)(li.QuadPart-timerStart)/PCFreq;
+  return (double)(li.QuadPart - timerStart) / PCFreq;
 #else
   struct timeval timerStop, timerElapsed;
   gettimeofday(&timerStop, NULL);
   timersub(&timerStop, &timerStart, &timerElapsed);
-    return timerElapsed.tv_sec*1000.0+timerElapsed.tv_usec/1000.0;
+  return timerElapsed.tv_sec * 1000.0 + timerElapsed.tv_usec / 1000.0;
 #endif
 }
 

@@ -1,6 +1,6 @@
 SRC=nbody-block.cu
 EXE=nbody-block
-
+ 
 nvcc -arch=sm_35 -ftz=true -I../ -o $EXE $SRC -DSHMOO
 
 echo $EXE
