@@ -27,7 +27,7 @@ void bodyForce(float4 *p, float4 *v,float4 *u, float4 *m, float dt, int n) {
       float dy = p[j].y - p[i].y;
       float dz = p[j].z - p[i].z;
 
-      float mg = G * m[j] ;
+      float mg = G * m[j].x ;
 
       float distSqr = dx*dx + dy*dy + dz*dz + SOFTENING;
       float invDist = rsqrtf(distSqr);
