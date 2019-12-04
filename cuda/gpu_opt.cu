@@ -67,7 +67,6 @@ int main(const int argc, const char** argv) {
     mass[l] = SOLAR_MASS * (rand() / (float)RAND_MAX);
   }
   std::cout<<"test 1"<<std::endl;
-  std::cout<<mass[0]<<std::endl;
   float *d_mass;
   std::cout<<"test 2"<<std::endl;
   cudaMalloc((void **)&d_mass, nBodies * sizeof(float));
