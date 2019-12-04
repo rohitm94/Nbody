@@ -69,13 +69,13 @@ int main(const int argc, const char** argv) {
   std::cout<<"test 1"<<std::endl;
   std::cout<<mass[0]<<std::endl;
   float *d_mass;
-
+  std::cout<<"test 2"<<std::endl;
   cudaMalloc((void **)&d_mass, nBodies * sizeof(float));
-
+  std::cout<<"test 3"<<std::endl;
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
   BodySystem d_p = { (float4*)d_buf, ((float4*)d_buf) + nBodies };
-
+  std::cout<<"test 4"<<std::endl;
   int nBlocks = (nBodies + BLOCK_SIZE - 1) / BLOCK_SIZE;
   double totalTime = 0.0;
 
@@ -83,10 +83,11 @@ int main(const int argc, const char** argv) {
     StartTimer();
 
     cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
+    std::cout<<"test 5"<<std::endl;
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
     bodyForce<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, nBodies);
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
-
+    std::cout<<"test 6"<<std::endl;
     for (int i = 0 ; i < nBodies; i++) { // integrate position
       p.pos[i].x += 0.5*(p.newvel[i].x + p.oldvel[i].x)*dt;
       p.pos[i].y += 0.5*(p.newvel[i].y + p.oldvel[i].y)*dt;
