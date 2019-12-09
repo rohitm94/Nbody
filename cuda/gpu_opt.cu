@@ -107,8 +107,6 @@ int main(const int argc, const char** argv) {
   printf("%d Bodies: average %0.3f Million body updates / second\n", nBodies, (1e-6 * nBodies * nIters) / avgTime);
 
 
-
-
   free(buf);
   cudaFree(d_buf);
   cudaFree(d_mass);
