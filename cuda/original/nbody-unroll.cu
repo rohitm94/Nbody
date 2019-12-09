@@ -86,12 +86,17 @@ int main(const int argc, const char** argv) {
     printf("Iteration %d: %.3f seconds\n", iter, tElapsed);
 #endif
   }
+  double float_ops_per_iteration = (21*nBodies) + (27*nBodies*nBodies);
+  double total_float_ops = nIters * float_ops_per_iteration;
+  double expected_time = total_float_ops/2.19e12;
+  
   double avgTime = totalTime / (double)(nIters-1); 
-  printf("Average Time: %0.9f\n", avgTime);
-#ifndef SHMOO
+
+printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
+#ifdef SHMOO
   printf("%d, %0.3f\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #else
-  //printf("Average rate for iterations 2 through %d: %.3f +- %.3f steps per second.\n",nIters, rate);
+printf("%d Bodies: Expected %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / expected_time);
   printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #endif
   free(buf);
