@@ -90,11 +90,11 @@ int main(const int argc, const char** argv) {
     const double tElapsed = GetTimer() / 1000.0;
     if (iter > 1) { // First iter is warm up
       totalTime += tElapsed;
-    }
+    }/*
 #ifndef SHMOO
     printf("Iteration %d: %.3f seconds\n", iter, tElapsed);
 #endif
-  }
+  }*/
   double avgTime = totalTime / (double)(nIters-1);
 
   auto float_ops_per_iteration = (15*nBodies) + (21*nBodies*nBodies);
@@ -103,8 +103,8 @@ int main(const int argc, const char** argv) {
   auto expected_time = total_float_ops/2.19e12;
 
 
-  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (1e-6*nBodies*nIters)/(expected_time));
-  printf("%d Bodies: average %0.3f Million body updates / second\n", nBodies, (1e-6 * nBodies * nIters) / avgTime);
+  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (1e-9*nBodies*(nIters-1))/(expected_time));
+  printf("%d Bodies: average %0.3f Million body updates / second\n", nBodies, (1e-9 * nBodies * (nIters-1)) / avgTime);
 
 
   free(buf);
