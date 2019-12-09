@@ -5,6 +5,8 @@
 
 #define BLOCK_SIZE 256
 #define SOFTENING 1e-9f
+#define G 6.674083131313131313e-11
+#define SOLAR_MASS 1.989e30
 
 typedef struct { float4 *pos, *newvel, *oldvel; } Body;
 
