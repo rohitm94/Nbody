@@ -95,7 +95,7 @@ int main(const int argc, const char** argv) {
   double avgTime = totalTime / (double)(nIters-1); 
 
 printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
-#ifdef SHMOO
+#ifndef SHMOO
   printf("%d, %0.3f\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #else
   printf("%d Bodies: Expected %0.3f Trillion Interactions / second\n", nBodies, 1e-12 *nBodies * nBodies / expected_time);
