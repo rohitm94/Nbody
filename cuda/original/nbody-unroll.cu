@@ -88,7 +88,7 @@ int main(const int argc, const char** argv) {
   }
   double float_ops_per_iteration = (15*nBodies) + (27*nBodies*nBodies);
 
-  double expected_time = float_ops_per_iteration*nBodies*nBodies/2.19e12;
+  double expected_time = float_ops_per_iteration/2.19e12;
   
   double avgTime = totalTime / (double)(nIters-1); 
 
