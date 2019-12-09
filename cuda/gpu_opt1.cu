@@ -34,6 +34,7 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         float dy = spos[j].y - p[i].y;
         float dz = spos[j].z - p[i].z;
 
+        float mg = G * m[j];
 
         float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
         float magnitude = rsqrtf(dis_sqr);
