@@ -85,11 +85,13 @@ int main(const int argc, const char** argv) {
   double totalTime = 0.0; 
 
   for (int iter = 1; iter <= num_time_steps; iter++) {
-    StartTimer();
+
 
     cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
-     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
+    StartTimer();
+    update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
+    const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
     for (int i = 0 ; i < num_body; i++) { // integrate position
@@ -98,7 +100,6 @@ int main(const int argc, const char** argv) {
         p.pos[i].z += (p.newvel[i].z)*dt;
       }
 
-    const double tElapsed = GetTimer() / 1000.0;
     if (iter > 1) { // First iter is warm up
       totalTime += tElapsed; 
     }
@@ -106,15 +107,14 @@ int main(const int argc, const char** argv) {
 }
 double avgTime = totalTime / (double)(num_time_steps-1);
 
-double float_ops_per_iteration = (21*num_body) + (27*num_body*num_body);
-double total_float_ops = num_time_steps * float_ops_per_iteration;
+double float_ops_per_iteration = (15*num_body) + (27*num_body*num_body);
 
-double expected_time = total_float_ops/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
+double expected_time = float_ops_per_iteration/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
 
 printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
-printf("Bodies: %d Expected: %0.3f Million body updates / second\n", num_body,(1e-6 * num_body * (num_time_steps)) /expected_time);
+printf("Bodies: %d Expected: %0.3f tril body updates / second\n", num_body,(1e-12 * num_body * num_body ) /expected_time);
 //printf("Average Time: %0.9f\n", avgTime);
-printf("Bodies: %d average %0.3f Million body updates / second\n\n", num_body, (1e-6 * num_body ) / avgTime);
+printf("Bodies: %d average %0.3f tril body updates / second\n\n", num_body, (1e-12 * num_body * num_body) / avgTime);
 
 free(buf);
 cudaFree(d_buf);
