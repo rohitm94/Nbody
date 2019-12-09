@@ -97,8 +97,13 @@ int main(const int argc, const char** argv) {
   }
   double avgTime = totalTime / (double)(nIters-1);
 
+  auto float_ops_per_iteration = (15*nBodies) + (21*nBodies*nBodies);
+  auto total_float_ops = nIters * float_ops_per_iteration;
 
-  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (nBodies*nIters)/(2.19e12/nIters*((15*nBodies) + (21*nBodies*nBodies))));
+  auto expected_time = total_float_ops/2.19e12;
+
+
+  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (1e-6*nBodies*nIters)/(expected_time);
   printf("%d Bodies: average %0.3f Million body updates / second\n", nBodies, (1e-6 * nBodies * nIters) / avgTime);
 
 
