@@ -97,10 +97,9 @@ int main(const int argc, const char** argv) {
   }
   double avgTime = totalTime / (double)(nIters-1);
 
-  printf("%d Bodies are supposed to take %0.6f seconds in each iteration\n", nBodies, 1e-9 * (15*nBodies +28*(nBodies*nBodies))/(1.6e12));
-  printf("Average Time taken in real: %0.6f seconds in each iteration\n", avgTime);
-  printf("Flops acheived: %0.6f\n", (15*nBodies +28*(nBodies*nBodies))/avgTime);
-  //printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
+
+  printf("Performance in Gravity Interactions calculated per second: %0.3f Billion Intrecations / second\n", 1e-9*(1.6e12*nBodies*nBodies)/(15*nBodies +28*(nBodies*nBodies)));
+  printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 
 
 
