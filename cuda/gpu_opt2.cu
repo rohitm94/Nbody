@@ -106,15 +106,15 @@ int main(const int argc, const char** argv) {
 }
 double avgTime = totalTime / (double)(num_time_steps-1);
 
-auto float_ops_per_iteration = (15*num_body) + (21*num_body*num_body);
+auto float_ops_per_iteration = (21*num_body) + (27*num_body*num_body);
 auto total_float_ops = num_time_steps * float_ops_per_iteration;
 
-auto expected_time = total_float_ops/2.19e12;
+auto expected_time = total_float_ops/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
 
-printf("expected time: %0.9f", expected_time);
-printf("Performance in Gravity Million body updated per second: %0.3f Million body updates / second\n", (1e-6 * num_body * (num_time_steps-1)) /expected_time);
-printf("Average Time: %0.9f", avgTime);
-printf("%d Bodies: average %0.3f Million body updates / second\n", num_body, (1e-6 * num_body * (num_time_steps-1)) / avgTime);
+printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
+printf("Bodies: %d Expected: %0.3f Million body updates / second\n\n", num_body,(1e-6 * num_body * (num_time_steps)) /expected_time);
+//printf("Average Time: %0.9f\n", avgTime);
+printf("Bodies: %d average %0.3f Million body updates / second\n", num_body, (1e-6 * num_body * (num_time_steps-1)) / avgTime);
 
 free(buf);
 cudaFree(d_buf);
