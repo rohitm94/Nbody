@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "timer.h"
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 512
 #define SOFTENING 1e-9f
 
 typedef struct { float4 *pos, *vel; } BodySystem;
@@ -98,8 +98,8 @@ printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
 #ifdef SHMOO
   printf("%d, %0.3f\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #else
-printf("%d Bodies: Expected %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / expected_time);
-  printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
+  printf("%d Bodies: Expected %0.3f Trillion Interactions / second\n", nBodies, 1e-12 * nBodies * nBodies / expected_time);
+  printf("%d Bodies: average %0.3f Trillion Interactions / second\n", nBodies, 1e-12 * nBodies * nBodies / avgTime);
 #endif
   free(buf);
   cudaFree(d_buf);
