@@ -90,11 +90,9 @@ int main(const int argc, const char** argv) {
     const double tElapsed = GetTimer() / 1000.0;
     if (iter > 1) { // First iter is warm up
       totalTime += tElapsed;
-    }/*
-#ifndef SHMOO
-    printf("Iteration %d: %.3f seconds\n", iter, tElapsed);
-#endif
-  }*/
+    }
+
+  }
   double avgTime = totalTime / (double)(nIters-1);
 
   auto float_ops_per_iteration = (15*nBodies) + (21*nBodies*nBodies);
