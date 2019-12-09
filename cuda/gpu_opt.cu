@@ -98,7 +98,7 @@ int main(const int argc, const char** argv) {
   double avgTime = totalTime / (double)(nIters-1);
 
 
-  printf("Performance in Gravity Interactions calculated per second: %0.3f Billion Intrecations / second\n", 1e-9*(1.6e12*nBodies*nBodies)/(15*nBodies +28*(nBodies*nBodies)));
+  printf("Performance in Gravity Interactions calculated per second: %0.3f Billion Intrecations / second\n", (1.6e3)/((15/nBodies) + 21);
   printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 
 
