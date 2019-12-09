@@ -103,7 +103,7 @@ int main(const int argc, const char** argv) {
   auto expected_time = total_float_ops/2.19e12;
 
 
-  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (1e-6*nBodies*nIters)/(expected_time);
+  printf("Performance in Gravity Interactions calculated per second: %0.3f Million Intrecations / second\n", (1e-6*nBodies*nIters)/(expected_time));
   printf("%d Bodies: average %0.3f Million body updates / second\n", nBodies, (1e-6 * nBodies * nIters) / avgTime);
 
 
