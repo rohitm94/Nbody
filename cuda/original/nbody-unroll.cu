@@ -98,7 +98,7 @@ printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
 #ifdef SHMOO
   printf("%d, %0.3f\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #else
-  printf("%d Bodies: Expected %0.3f Trillion Interactions / second\n", nBodies, 1e-12 * nBodies * nBodies / expected_time);
+  printf("%d Bodies: Expected %0.3f Trillion Interactions / second\n", nBodies, 1e-12 *nBodies * nBodies / expected_time);
   printf("%d Bodies: average %0.3f Trillion Interactions / second\n", nBodies, 1e-12 * nBodies * nBodies / avgTime);
 #endif
   free(buf);
