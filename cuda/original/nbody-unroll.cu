@@ -66,10 +66,12 @@ int main(const int argc, const char** argv) {
   double totalTime = 0.0; 
 
   for (int iter = 1; iter <= nIters; iter++) {
-    StartTimer();
+
 
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
+    StartTimer();
     bodyForce<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.vel, dt, nBodies);
+    const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
     for (int i = 0 ; i < nBodies; i++) { // integrate position
@@ -78,7 +80,7 @@ int main(const int argc, const char** argv) {
       p.pos[i].z += p.vel[i].z*dt;
     }
 
-    const double tElapsed = GetTimer() / 1000.0;
+
     if (iter > 1) { // First iter is warm up
       totalTime += tElapsed; 
     }
@@ -86,7 +88,7 @@ int main(const int argc, const char** argv) {
     printf("Iteration %d: %.3f seconds\n", iter, tElapsed);
 #endif
   }
-  double float_ops_per_iteration = (21*nBodies) + (27*nBodies*nBodies);
+  double float_ops_per_iteration = (15*nBodies) + (27*nBodies*nBodies);
   double total_float_ops = float_ops_per_iteration;
   double expected_time = total_float_ops/2.19e12;
   

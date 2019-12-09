@@ -114,7 +114,7 @@ double expected_time = total_float_ops/2.19e12; // gpu peak flop rate is 2.19e12
 printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
 printf("Bodies: %d Expected: %0.3f Million body updates / second\n", num_body,(1e-6 * num_body * (num_time_steps)) /expected_time);
 //printf("Average Time: %0.9f\n", avgTime);
-printf("Bodies: %d average %0.3f Million body updates / second\n\n", num_body, (1e-6 * num_body * (num_time_steps-1)) / avgTime);
+printf("Bodies: %d average %0.3f Million body updates / second\n\n", num_body, (1e-6 * num_body ) / avgTime);
 
 free(buf);
 cudaFree(d_buf);
