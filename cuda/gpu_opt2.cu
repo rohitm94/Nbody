@@ -109,7 +109,7 @@ double avgTime = totalTime / (double)(num_time_steps-1);
 
 double float_ops_per_iteration = (15*num_body) + (27*num_body*num_body);
 
-double expected_time = float_ops_per_iteration/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
+double expected_time = float_ops_per_iteration*num_body*num_body/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
 
 printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
 printf("Bodies: %d Expected: %0.3f tril body updates / second\n", num_body,(1e-12 * num_body * num_body ) /expected_time);
