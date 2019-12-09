@@ -87,12 +87,11 @@ int main(const int argc, const char** argv) {
 #endif
   }
   double avgTime = totalTime / (double)(nIters-1); 
-
-#ifdef SHMOO
+  printf("Average Time: %0.9f\n", avgTime);
+#ifndef SHMOO
   printf("%d, %0.3f\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #else
-  printf("Average rate for iterations 2 through %d: %.3f +- %.3f steps per second.\n",
-         nIters, rate);
+  //printf("Average rate for iterations 2 through %d: %.3f +- %.3f steps per second.\n",nIters, rate);
   printf("%d Bodies: average %0.3f Billion Interactions / second\n", nBodies, 1e-9 * nBodies * nBodies / avgTime);
 #endif
   free(buf);
