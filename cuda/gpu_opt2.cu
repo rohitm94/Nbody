@@ -65,7 +65,7 @@ int main(const int argc, const char** argv) {
   int mass_size = num_body * sizeof(float);
   float *buf = (float*)malloc(bytes);
   float *mass = NULL;
-  Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)d_buf) + num_body + num_body};
+  Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)buf) + num_body + num_body};
 
   gen_body_data(buf, 12*num_body); // Init pos / vel data
 
