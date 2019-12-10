@@ -90,7 +90,7 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
     StartTimer();
-    update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
+    //update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
     cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
@@ -115,7 +115,6 @@ double expected_time = float_ops_per_interaction/2.19e12; // gpu peak flop rate 
 
 printf("expected time: %0.9lf\t Average time:%0.9lf\n", expected_time*num_body*num_body, avgTime);
 printf("Bodies: %d Expected: %0.3lf billion interactions / second\n", num_body,(1e-9 ) /expected_time);
-//printf("Average Time: %0.9f\n", avgTime);
 printf("Bodies: %d average %0.3lf billion interactions / second\n\n", num_body, (1e-9*num_body*num_body ) / avgTime);
 
 free(buf);
