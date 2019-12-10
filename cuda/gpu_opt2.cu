@@ -55,7 +55,7 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
 
 int main(const int argc, const char** argv) {
 
-  int num_body = 30000;
+  int num_body = 10000000; // 10 million
   if (argc > 1) num_body = atoi(argv[1]);
 
   const float dt = 0.01f; // time step
