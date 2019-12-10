@@ -34,22 +34,22 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         float dy = spos[j].y - p[i].y;
         float dz = spos[j].z - p[i].z;
 
-        float mg = G * m[j];
+        //float mg = G * m[j];
 
         float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
         float magnitude = rsqrtf(dis_sqr);
         float mag_cube = magnitude * magnitude * magnitude;
 
-        Ax += mg * dx * mag_cube;
-        Ay += mg * dy * mag_cube;
-        Az += mg * dz * mag_cube;
+        Ax += m[j] * dx * mag_cube;
+        Ay += m[j] * dy * mag_cube;
+        Az += m[j] * dz * mag_cube;
       }
       __syncthreads();
     }
 
-    v[i].x += dt*Ax + u[i].x;
-    v[i].y += dt*Ay + u[i].y;
-    v[i].z += dt*Az + u[i].z;
+    v[i].x += dt*Ax + v[i].x;
+    v[i].y += dt*Ay + v[i].y;
+    v[i].z += dt*Az + v[i].z;
   }
 }
 
@@ -72,7 +72,7 @@ int main(const int argc, const char** argv) {
   cudaMallocHost((void **)&mass, mass_size);
 
   for(int l = 0;l<num_body;l++){
-    mass[l] = SOLAR_MASS * (rand() / (float)RAND_MAX);
+    mass[l] = SOLAR_MASS * G * (rand() / (float)RAND_MAX);
   }
   float *d_mass;
   cudaMalloc((void **)&d_mass, num_body * sizeof(float));
