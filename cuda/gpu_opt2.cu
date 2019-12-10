@@ -102,6 +102,7 @@ int main(const int argc, const char** argv) {
       }
 
     if (iter > 1) { // First iter is warm up
+      printf("In %d iteration: %lf",iter, tElapsed);
       totalTime += tElapsed;
     }
 
