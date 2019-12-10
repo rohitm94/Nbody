@@ -87,7 +87,7 @@ int main(const int argc, const char** argv) {
   }
   double avgTime = totalTime / (double)(nIters-1); 
 
-  double float_ops_per_interaction =27 + (15/ num_body) ;
+  double float_ops_per_interaction =22 + (9/ num_body) ;
 
   double expected_time = float_ops_per_interaction/2.19e12;
 
