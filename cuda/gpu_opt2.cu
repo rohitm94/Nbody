@@ -22,17 +22,17 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
     if (i < n) {
         float Ax = 0.0f; float Ay = 0.0f; float Az = 0.0f;
 
-    for (int tile = 0; tile < gridDim.x; tile++) {
+    /*for (int tile = 0; tile < gridDim.x; tile++) {
       __shared__ float3 spos[BLOCK_SIZE];
       float4 tpos = p[tile * blockDim.x + threadIdx.x];
       spos[threadIdx.x] = make_float3(tpos.x, tpos.y, tpos.z);
       __syncthreads();
 
-      #pragma unroll
+      #pragma unroll*/
       for (int j = 0; j < BLOCK_SIZE; j++) {
-        float dx = spos[j].x - p[i].x;
-        float dy = spos[j].y - p[i].y;
-        float dz = spos[j].z - p[i].z;
+        float dx = p[j].x - p[i].x;
+        float dy = p[j].y - p[i].y;
+        float dz = p[j].z - p[i].z;
 
         float mg = G * m[j];
 
@@ -44,8 +44,8 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         Ay += mg * dy * mag_cube;
         Az += mg * dz * mag_cube;
       }
-      __syncthreads();
-    }
+      //__syncthreads();
+    //}
 
     v[i].x += dt*Ax + u[i].x;
     v[i].y += dt*Ay + u[i].y;
@@ -54,20 +54,20 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
 }
 
 int main(const int argc, const char** argv) {
-  
+
   int num_body = 30000;
   if (argc > 1) num_body = atoi(argv[1]);
-  
+
   const float dt = 0.01f; // time step
   const int num_time_steps = 10;  // simulation iterations
-  
+
   int bytes = 3*num_body*sizeof(float4);
   int mass_size = num_body * sizeof(float);
   float *buf = (float*)malloc(bytes);
   float *mass = NULL;
-  Body p = { (float4*)buf, ((float4*)buf) + num_body };
+  Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)d_buf) + num_body + num_body};
 
-  gen_body_data(buf, 8*num_body); // Init pos / vel data
+  gen_body_data(buf, 12*num_body); // Init pos / vel data
 
   cudaMallocHost((void **)&mass, mass_size);
 
@@ -79,10 +79,10 @@ int main(const int argc, const char** argv) {
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
-  Body d_p = { (float4*)d_buf, ((float4*)d_buf) + num_body };
+  Body d_p = { (float4*)d_buf, ((float4*)d_buf) + num_body, ((float4*)d_buf) + num_body + num_body };
 
   int nBlocks = (num_body + BLOCK_SIZE - 1) / BLOCK_SIZE;
-  double totalTime = 0.0; 
+  double totalTime = 0.0;
 
   for (int iter = 1; iter <= num_time_steps; iter++) {
 
@@ -91,6 +91,7 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
     StartTimer();
     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
+    cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
@@ -101,20 +102,20 @@ int main(const int argc, const char** argv) {
       }
 
     if (iter > 1) { // First iter is warm up
-      totalTime += tElapsed; 
+      totalTime += tElapsed;
     }
 
 }
 double avgTime = totalTime / (double)(num_time_steps-1);
 
-double float_ops_per_iteration = (15*num_body) + (27*num_body*num_body);
-printf("test1:%0.9f", float_ops_per_iteration);
-double expected_time = float_ops_per_iteration/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
+double float_ops_per_interaction =27 + (15/ num_body) ;
 
-printf("expected time: %0.9f\t Average time:%0.9f\n", expected_time, avgTime);
-printf("Bodies: %d Expected: %0.3f tril body updates / second\n", num_body,(1e-12 * num_body * num_body ) /expected_time);
+double expected_time = float_ops_per_interaction/2.19e12; // gpu peak flop rate is 2.19e12 for Tesla K80
+
+printf("expected time: %0.9lf\t Average time:%0.9lf\n", expected_time*num_body*num_body, avgTime);
+printf("Bodies: %d Expected: %0.3lf billion interactions / second\n", num_body,(1e-9 ) /expected_time);
 //printf("Average Time: %0.9f\n", avgTime);
-printf("Bodies: %d average %0.3f tril body updates / second\n\n", num_body, (1e-12 * num_body * num_body) / avgTime);
+printf("Bodies: %d average %0.3lf billion interactions / second\n\n", num_body, (1e-9*num_body*num_body ) / avgTime);
 
 free(buf);
 cudaFree(d_buf);
