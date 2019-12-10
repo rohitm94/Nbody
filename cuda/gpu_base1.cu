@@ -69,6 +69,7 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
     StartTimer();
     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p, dt, num_body); 
+    cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
