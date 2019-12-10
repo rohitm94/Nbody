@@ -22,17 +22,17 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
     if (i < n) {
         float Ax = 0.0f; float Ay = 0.0f; float Az = 0.0f;
 
-    /*for (int tile = 0; tile < gridDim.x; tile++) {
+    for (int tile = 0; tile < gridDim.x; tile++) {
       __shared__ float3 spos[BLOCK_SIZE];
       float4 tpos = p[tile * blockDim.x + threadIdx.x];
       spos[threadIdx.x] = make_float3(tpos.x, tpos.y, tpos.z);
       __syncthreads();
 
-      #pragma unroll*/
+      #pragma unroll
       for (int j = 0; j < BLOCK_SIZE; j++) {
-        float dx = p[j].x - p[i].x;
-        float dy = p[j].y - p[i].y;
-        float dz = p[j].z - p[i].z;
+        float dx = spos[j].x - p[i].x;
+        float dy = spos[j].y - p[i].y;
+        float dz = spos[j].z - p[i].z;
 
         float mg = G * m[j];
 
@@ -44,8 +44,8 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         Ay += mg * dy * mag_cube;
         Az += mg * dz * mag_cube;
       }
-      //__syncthreads();
-    //}
+      __syncthreads();
+    }
 
     v[i].x += dt*Ax + u[i].x;
     v[i].y += dt*Ay + u[i].y;
@@ -90,7 +90,7 @@ int main(const int argc, const char** argv) {
     cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
     StartTimer();
-    //update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
+    update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
     cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
