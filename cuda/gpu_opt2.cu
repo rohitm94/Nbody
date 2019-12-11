@@ -34,10 +34,10 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         float dy = spos[j].y - p[i].y;
         float dz = spos[j].z - p[i].z;
 
-        //float mg = G * m[j];
-
         float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
-        float magnitude = rsqrtf(dis_sqr);
+        //float magnitude = rsqrtf(dis_sqr);
+        //float mag_cube = magnitude * magnitude * magnitude;
+        float magnitude = rnorm3df( dx, dy, dz);
         float mag_cube = magnitude * magnitude * magnitude;
 
         Ax += m[j] * dx * mag_cube;
@@ -111,7 +111,7 @@ double avgTime = totalTime / (double)(num_time_steps-1);
 
 double float_ops_per_interaction =22 + (9/ num_body) ;
 
-double expected_time = float_ops_per_interaction/2.91e12; // gpu peak flop rate is 2.19e12 for Tesla K80
+double expected_time = float_ops_per_interaction/2.91e12; // gpu peak flop rate is 2.91e12 for Tesla K80
 
 printf("expected time: %0.9lf\t Average time:%0.9lf\n", expected_time*num_body*num_body, avgTime);
 printf("Bodies: %d Expected: %0.3lf billion interactions / second\n", num_body,(1e-9 ) /expected_time);
