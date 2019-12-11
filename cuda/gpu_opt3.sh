@@ -1,9 +1,6 @@
 SRC=gpu_opt3.cu
 EXE=gpu_opt3
 
-module load cuda
-nvcc -arch=sm_35 -ftz=true -I../ -o $EXE $SRC
-
 echo $EXE
 
 K=65536

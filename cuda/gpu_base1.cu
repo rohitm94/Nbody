@@ -55,7 +55,7 @@ int main(const int argc, const char** argv) {
   float *buf = (float*)malloc(bytes);
   Body *p = (Body*)buf;
 
-  gen_body_data(buf, 10*num_body); // Init pos / vel data
+  gen_body_data(buf, 10*num_body); // Initializing positions, velocities and initial velocities
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
@@ -67,20 +67,24 @@ int main(const int argc, const char** argv) {
   for (int iter = 1; iter <= nIters; iter++) {
 
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
+                                                          // Timing the calculations
     StartTimer();
     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p, dt, num_body); 
     cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
+
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
-    for (int i = 0 ; i < num_body; i++) { // integrate position
+    for (int i = 0 ; i < num_body; i++) { // Assigning the newly calculated position
       p[i].x += p[i].vx*dt;
       p[i].y += p[i].vy*dt;
       p[i].z += p[i].vz*dt;
+
+      Printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p[i].x , p[i].y , p[i].z);
     }
     
-    if (iter > 1) { // First iter is warm up
-      printf("Iteration %d: %.3lf seconds\n", iter, tElapsed);
+    if (iter > 1) { // Neglecting the first Iteration
+      printf("In %d iteration: %lf\n",iter, tElapsed);
       totalTime += tElapsed; 
     }
 

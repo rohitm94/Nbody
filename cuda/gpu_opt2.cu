@@ -73,7 +73,7 @@ int main(const int argc, const char** argv) {
   cudaMallocHost((void **)&mass, mass_size);
 
   for(int l = 0;l<num_body;l++){
-    mass[l] = SOLAR_MASS * G * (rand() / (float)RAND_MAX);
+    mass[l] = SOLAR_MASS * G * (rand() / (float)RAND_MAX); // generating the 
   }
   float *d_mass;
   cudaMalloc((void **)&d_mass, num_body * sizeof(float));
@@ -90,20 +90,23 @@ int main(const int argc, const char** argv) {
 
     cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
+                                                             // Timing the calculations
     StartTimer();
     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
     cudaDeviceSynchronize();
     const double tElapsed = GetTimer() / 1000.0;
     cudaMemcpy(buf, d_buf, bytes, cudaMemcpyDeviceToHost);
 
-    for (int i = 0 ; i < num_body; i++) { // integrate position
+    for (int i = 0 ; i < num_body; i++) { // Assigning the newly calculated position
         p.pos[i].x += (p.newvel[i].x)*dt;
         p.pos[i].y += (p.newvel[i].y)*dt;
         p.pos[i].z += (p.newvel[i].z)*dt;
+
+        Printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p.pos[i].x , p.pos[i].y , p.pos[i].z);
       }
 
-    if (iter > 1) { // First iter is warm up
-      printf("In %d iteration: %lf",iter, tElapsed);
+    if (iter > 1) { // Neglecting the first iteration
+      printf("In %d iteration: %lf\n",iter, tElapsed);
       totalTime += tElapsed;
     }
 
