@@ -80,7 +80,7 @@ int main(const int argc, const char** argv) {
       p[i].y += p[i].vy*dt;
       p[i].z += p[i].vz*dt;
     }
-    Printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p[0].x , p[0].y , p[0].z);
+    printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p[0].x , p[0].y , p[0].z);
     
     if (iter > 1) { // Neglecting the first Iteration
       printf("In %d iteration: %lf\n",iter, tElapsed);
