@@ -102,7 +102,7 @@ int main(const int argc, const char** argv) {
         p.pos[i].y += (p.newvel[i].y)*dt;
         p.pos[i].z += (p.newvel[i].z)*dt;
 
-        Printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p.pos[i].x , p.pos[i].y , p.pos[i].z);
+        printf("In %d timestep, position cordinates: %f\t %f\t %f",iter, p.pos[i].x , p.pos[i].y , p.pos[i].z);
       }
 
     if (iter > 1) { // Neglecting the first iteration
