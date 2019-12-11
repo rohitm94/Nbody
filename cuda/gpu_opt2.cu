@@ -30,15 +30,17 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
 
       #pragma unroll
       for (int j = 0; j < BLOCK_SIZE; j++) {
+        //  3 flops
         float dx = spos[j].x - p[i].x;
         float dy = spos[j].y - p[i].y;
         float dz = spos[j].z - p[i].z;
 
-        float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
-        float magnitude = rsqrtf(dis_sqr);
-        float mag_cube = magnitude * magnitude * magnitude;
+        float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;  // 6 flops
+        
+        float magnitude = rsqrtf(dis_sqr);                  // 2 flops
+        float mag_cube = magnitude * magnitude * magnitude; // 2 flops
 
-        Ax += m[j] * dx * mag_cube;
+        Ax += m[j] * dx * mag_cube;                         // 6 flops
         Ay += m[j] * dy * mag_cube;
         Az += m[j] * dz * mag_cube;
       }
@@ -109,7 +111,7 @@ int main(const int argc, const char** argv) {
 }
 double avgTime = totalTime / (double)(num_time_steps-1);
 
-double float_ops_per_interaction =22 + (9/ num_body) ;
+double float_ops_per_interaction =19 + (9/ num_body) ;
 
 double expected_time = float_ops_per_interaction/2.91e12; // gpu peak flop rate is 2.91e12 for Tesla K80
 
