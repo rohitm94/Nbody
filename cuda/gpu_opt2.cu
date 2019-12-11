@@ -24,7 +24,7 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
 
     for (int tile = 0; tile < gridDim.x; tile++) {
       __shared__ float3 spos[BLOCK_SIZE];
-      float3 tpos = p[tile * blockDim.x + threadIdx.x];
+      float4 tpos = p[tile * blockDim.x + threadIdx.x];
       spos[threadIdx.x] = make_float3(tpos.x, tpos.y, tpos.z);
       __syncthreads();
 
