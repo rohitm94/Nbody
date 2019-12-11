@@ -60,6 +60,7 @@ int main(const int argc, const char** argv) {
   const int num_time_steps = 10;  // simulation iterations
 
   int bytes = 3*num_body*sizeof(float4);
+  int mass_size = num_body * sizeof(float);
   float *buf = (float*)malloc(bytes);
   float *mass = NULL;
   Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)buf) + num_body + num_body};
