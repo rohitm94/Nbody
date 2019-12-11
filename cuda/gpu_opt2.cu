@@ -8,7 +8,7 @@
 #define G 6.674083131313131313e-11
 #define SOLAR_MASS 1.989e30
 
-typedef struct { float4 *pos, *newvel, *oldvel; } Body;
+typedef struct { float3 *pos, *newvel, *oldvel; } Body;
 
 void gen_body_data(float *data, int n) {
   for (int i = 0; i < n; i++) {
@@ -17,14 +17,14 @@ void gen_body_data(float *data, int n) {
 }
 
 __global__
-void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
+void update_kernel(float3 *p, float3 *v,float3 *u,float *m, float dt, int n) {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     if (i < n) {
         float Ax = 0.0f; float Ay = 0.0f; float Az = 0.0f;
 
     for (int tile = 0; tile < gridDim.x; tile++) {
       __shared__ float3 spos[BLOCK_SIZE];
-      float4 tpos = p[tile * blockDim.x + threadIdx.x];
+      float3 tpos = p[tile * blockDim.x + threadIdx.x];
       spos[threadIdx.x] = make_float3(tpos.x, tpos.y, tpos.z);
       __syncthreads();
 
@@ -62,11 +62,11 @@ int main(const int argc, const char** argv) {
   const float dt = 0.01f; // time step
   const int num_time_steps = 10;  // simulation iterations
 
-  int bytes = 3*num_body*sizeof(float4);
+  int bytes = 3*num_body*sizeof(float3);
   int mass_size = num_body * sizeof(float);
   float *buf = (float*)malloc(bytes);
   float *mass = NULL;
-  Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)buf) + num_body + num_body};
+  Body p = { (float3*)buf, ((float3*)buf) + num_body , ((float3*)buf) + num_body + num_body};
 
   gen_body_data(buf, 12*num_body); // Init pos / vel data
 
@@ -80,7 +80,7 @@ int main(const int argc, const char** argv) {
 
   float *d_buf;
   cudaMalloc(&d_buf, bytes);
-  Body d_p = { (float4*)d_buf, ((float4*)d_buf) + num_body, ((float4*)d_buf) + num_body + num_body };
+  Body d_p = { (float3*)d_buf, ((float3*)d_buf) + num_body, ((float3*)d_buf) + num_body + num_body };
 
   int nBlocks = (num_body + BLOCK_SIZE - 1) / BLOCK_SIZE;
   double totalTime = 0.0;
