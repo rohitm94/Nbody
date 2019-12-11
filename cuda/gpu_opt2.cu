@@ -37,9 +37,6 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
         float magnitude = rsqrtf(dis_sqr);
         float mag_cube = magnitude * magnitude * magnitude;
-        /*float magnitude = rnorm3df( dx, dy, dz);
-        float mag_cube = magnitude * magnitude * magnitude;
-        float mag_cube = powf(dis_sqr, -1.5);*/
 
         Ax += m[j] * dx * mag_cube;
         Ay += m[j] * dy * mag_cube;
@@ -63,17 +60,16 @@ int main(const int argc, const char** argv) {
   const int num_time_steps = 10;  // simulation iterations
 
   int bytes = 3*num_body*sizeof(float4);
-  int mass_size = num_body * sizeof(float);
   float *buf = (float*)malloc(bytes);
   float *mass = NULL;
   Body p = { (float4*)buf, ((float4*)buf) + num_body , ((float4*)buf) + num_body + num_body};
 
   gen_body_data(buf, 12*num_body); // Init pos / vel data
 
-  cudaMallocHost((void **)&mass, mass_size);
+  cudaMallocHost((void **)&mass, num_body * sizeof(float));
 
   for(int l = 0;l<num_body;l++){
-    mass[l] = SOLAR_MASS * G * (rand() / (float)RAND_MAX); // generating the 
+    mass[l] = SOLAR_MASS * G * (rand() / (float)RAND_MAX); // generating the mass values
   }
   float *d_mass;
   cudaMalloc((void **)&d_mass, num_body * sizeof(float));
@@ -88,8 +84,9 @@ int main(const int argc, const char** argv) {
   for (int iter = 1; iter <= num_time_steps; iter++) {
 
 
-    cudaMemcpy(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
+    cudaMemcpyAsync(d_mass, mass, mass_size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_buf, buf, bytes, cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
                                                              // Timing the calculations
     StartTimer();
     update_kernel<<<nBlocks, BLOCK_SIZE>>>(d_p.pos, d_p.newvel, d_p.oldvel, d_mass, dt, num_body);
