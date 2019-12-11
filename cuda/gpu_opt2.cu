@@ -35,11 +35,11 @@ void update_kernel(float4 *p, float4 *v,float4 *u,float *m, float dt, int n) {
         float dz = spos[j].z - p[i].z;
 
         float dis_sqr = dx*dx + dy*dy + dz*dz + SOFTENING;
-        //float magnitude = rsqrtf(dis_sqr);
-        /*float mag_cube = magnitude * magnitude * magnitude;
-        float magnitude = rnorm3df( dx, dy, dz);
-        float mag_cube = magnitude * magnitude * magnitude;*/
-        float mag_cube = powf(dis_sqr, -1.5);
+        float magnitude = rsqrtf(dis_sqr);
+        float mag_cube = magnitude * magnitude * magnitude;
+        /*float magnitude = rnorm3df( dx, dy, dz);
+        float mag_cube = magnitude * magnitude * magnitude;
+        float mag_cube = powf(dis_sqr, -1.5);*/
 
         Ax += m[j] * dx * mag_cube;
         Ay += m[j] * dy * mag_cube;
