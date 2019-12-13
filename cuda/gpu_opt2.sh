@@ -1,5 +1,5 @@
-SRC=gpu_base1.cu
-EXE=gpu_base1
+SRC=gpu_opt2.cu
+EXE=gpu_opt2
 
 K=65536
 for i in {1..10}
